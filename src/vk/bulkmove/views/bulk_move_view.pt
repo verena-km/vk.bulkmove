@@ -8,7 +8,7 @@
 
   <metal:main fill-slot="main">
 
-    <div tal:condition="not: view/valid">
+    <div tal:condition="python: not view.valid">
 
         <h1 class="documentFirstHeading">CSV-Datei hochladen</h1>
 
@@ -29,7 +29,7 @@
                     type="file"
                     name="instructions_file"
                     id="instructions_file"
-                    />
+                />
             </div>
 
             <div class="plone-btn-group">
@@ -51,11 +51,11 @@
 
     </div>
 
-    <div tal:condition="python:view.valid and not view.do_action">
-        <h1 class="documentFirstHeading">Inhalte verschieben:</h1>
+    <div tal:condition="python:view.valid and not view.move_completed">
+        <h1 class="documentFirstHeading">Inhalte verschieben</h1>
 
         <p>
-            Die nachfolgend aufgeführten Operationen werden durchgeführt - sofern Quell- und Zielobjekt existieren (grün gekennzeichnet.)
+            Folgende Operationen wurden eingelesen. Nicht vorhandene Objekte oder Objekte falschen Typs sind rot gekennzeichnet:
         </p>
 
         <table>
@@ -64,16 +64,34 @@
                 <th>target</th>
             </tr>
         
-            <tr tal:repeat="action view/checked_actions">
-                <td tal:condition="python:action['source_object']" tal:attributes="style string:color:green;" tal:content="action/source">/x/y/z</td>
-                <td tal:condition="python:not action['source_object']" tal:attributes="style string:color:red;" tal:content="action/source">/x/y/z</td>
+            <tr tal:repeat="action view/actions">
+                <td tal:condition="python:action['source_ok']" tal:attributes="style string:color:green;" tal:content="action/source">/x/y/z</td>
+                <td tal:condition="python:not action['source_ok']" tal:attributes="style string:color:red;" tal:content="action/source">/x/y/z</td>
 
-                <td tal:condition="python:action['target_object']" tal:attributes="style string:color:green;" tal:content="action/target">/a/b/c</td>
-                <td tal:condition="python:not action['target_object']" tal:attributes="style string:color:red;" tal:content="action/target">/a/b/c</td>
+                <td tal:condition="python:action['target_ok']" tal:attributes="style string:color:green;" tal:content="action/target">/a/b/c</td>
+                <td tal:condition="python:not action['target_ok']" tal:attributes="style string:color:red;" tal:content="action/target">/a/b/c</td>
             </tr>
 
         </table>
+        <br/>
+        <p>
+            Die nachfolgend aufgeführten Verschiebe-Operationen werden durchgeführt:
+        </p>
 
+        <table>
+            <tr>
+                <th>source</th>
+                <th>target</th>
+            </tr>
+        
+            <tr tal:repeat="action view/valid_actions">
+                <td tal:attributes="style string:color:green;" tal:content="action/source">/x/y/z</td>
+                <td tal:attributes="style string:color:green;" tal:content="action/target">/a/b/c</td>
+                
+            </tr>
+
+        </table>
+        <br/>
         <form
             name="move"
             method="post"
@@ -82,10 +100,10 @@
             tal:attributes="action request/URL">
 
                 <input
-                    name="actions_dict"
-                    tal:attributes="value view/actions"
+                    type="hidden"
+                    name="valid_actions_dict"
+                    tal:attributes="value view/valid_actions"
                     />
-
 
             <div class="plone-btn-group">
                 <input
@@ -106,9 +124,8 @@
 
     </div>
 
-    <div tal:condition="python:view.valid and view.do_action">
-        Verschieben durchgeführt.
-
+    <div tal:condition="python:view.valid and view.move_completed">
+        Es wurden <span tal:content="python: len(view.valid_actions)"/> Objekte verschoben.
     </div> 
 
   </metal:main>
