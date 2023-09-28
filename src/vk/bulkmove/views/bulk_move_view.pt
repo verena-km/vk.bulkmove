@@ -16,6 +16,20 @@
            Wählen sie eine csv-Datei mit Informationen zu den zu verschiebenden Inhalten aus.
         </p>
 
+        <p>
+           Die Datei sollte wie folgt aufgebaut sein:
+           <pre>
+source, target
+/verz1/datei1, /verz4
+/verz2, /verz5/verz6
+/verz3/*, /verz7  </pre>
+        </p>
+
+        <p>
+        Als Quelle kann ein Verzeichnis, oder ein einzelner Inhalt angegeben werden
+        Besitzer und Workflow-Status bleiben erhalten, das Änderungsdatum wird auf den Zeitpunkt des Verschiebens aktualisiert.
+        </p>
+
        <form
             name="upload"
             method="post"
